@@ -9,4 +9,10 @@ jquery*.*
 .project
 .metadata
 src/main/java/com/mycompany/hosted/http/*
+src/main/webapp/WEB-INF/flows/checkout/resources/fonts/
+src/main/webapp/WEB-INF/flows/checkout/resources/javascript/json.min.js
+src/main/webapp/resources/fonts/
+src/main/webapp/resources/javascript/json.min.js
+src/test/
+
 

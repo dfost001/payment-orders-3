@@ -1,0 +1,2 @@
+ <a href="#demo" data-toggle="collapse">Simple collapsible<span class="caret"></span></a>
+  <div id="demo" class="collapse">
