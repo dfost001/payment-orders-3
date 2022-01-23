@@ -1,0 +1,12 @@
+target/
+scr/
+*.class
+*.jar
+bootstrap*.*
+jquery*.*
+.settings/
+.classpath
+.project
+.metadata
+src/main/java/com/mycompany/hosted/http/*
+
