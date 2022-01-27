@@ -53,7 +53,9 @@ public class CreateOrder2 {
 	   *@return HttpResponse<Order> response received from API
 	   *@throws IOException Exceptions from API if any
 	   */
-	  public Order create(Cart cart, PostalAddress shipping) throws CheckoutHttpException {		
+	  public Order create(Cart cart, PostalAddress shipping) throws CheckoutHttpException {	
+		  
+		System.out.println(this.getClass().getName() + "#create: executing") ; 
 		
 		if(cart == null) { 
 			 this.throwIllegalArg("Cart is null");

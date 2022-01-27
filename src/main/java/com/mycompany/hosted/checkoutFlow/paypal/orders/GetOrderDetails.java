@@ -39,8 +39,8 @@ public class GetOrderDetails  {
 		testException = true;
 	}
 	
-	 public String getOrder(RequestContext ctx) throws CheckoutHttpException {		
-		 
+	 public String getOrder(RequestContext ctx) throws CheckoutHttpException {			 
+		  
 		   
 		   if(testException) {
 			   
