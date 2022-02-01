@@ -9,6 +9,7 @@ import org.springframework.webflow.execution.RequestContext;
 
 import com.mycompany.hosted.checkoutFlow.exceptions.FlowNavigationException;
 import com.mycompany.hosted.checkoutFlow.exceptions.WebflowCartEmptyException;
+import com.mycompany.hosted.checkoutFlow.paypal.orders.PaymentDetails;
 import com.mycompany.hosted.exception_handler.EhrLogger;
 import com.mycompany.hosted.model.Customer;
 import com.mycompany.hosted.model.PostalAddress;
@@ -19,16 +20,18 @@ public class EvalApplicationState {
 	
 	private enum EntryKey {
 		
-		EntryCustomer, EntrySelectedAddress, EntryPaymentDetails
+		EntryCustomer, EntrySelectedAddress, EntryDetailsCompleted, EntryDetails
 	}
 	
-	Customer currentCustomer;
-	Boolean currentPaymentDetails;
+	Customer currentCustomer;	
 	PostalAddress currentSelectedAddress;
+	Boolean currentHasDetails;
+	PaymentDetails currentPaymentDetails;
 	
 	Customer entryCustomer;
 	PostalAddress entrySelectedAddress;
-	Boolean entryPaymentDetails;
+	Boolean entryHasDetails;	
+	PaymentDetails entryPaymentDetails;
 	
 	
 	private void initCurrentSessionState(RequestContext ctx) {
@@ -39,7 +42,9 @@ public class EvalApplicationState {
 	   
 	   currentSelectedAddress = (PostalAddress)sessionMap.get(WebFlowConstants.SELECTED_POSTAL_ADDR);
 	   
-	   currentPaymentDetails = sessionMap.getBoolean(WebFlowConstants.PAYPAL_GETDETAILS_COMPLETED);   
+	   currentHasDetails = sessionMap.getBoolean(WebFlowConstants.PAYPAL_GETDETAILS_COMPLETED);  
+	   
+	   currentPaymentDetails = (PaymentDetails)sessionMap.get(WebFlowConstants.PAYMENT_DETAILS);
 		
 	}
 	
@@ -51,7 +56,9 @@ public class EvalApplicationState {
 		
 		entrySelectedAddress = (PostalAddress)viewScope.get(EntryKey.EntrySelectedAddress.name());
 		
-		entryPaymentDetails = (Boolean) viewScope.getBoolean(EntryKey.EntryPaymentDetails.name());
+		entryHasDetails = (Boolean) viewScope.getBoolean(EntryKey.EntryDetailsCompleted.name());
+		
+		entryPaymentDetails = (PaymentDetails)viewScope.get(EntryKey.EntryDetails.name());
 		
 		//debugViewScope(ctx.getCurrentState().toString(), entryCustomer, entrySelectedAddress, entryPaymentDetails);
 		
@@ -68,14 +75,17 @@ public class EvalApplicationState {
 		   
 		PostalAddress entrySelectedAddress = (PostalAddress)sessionMap.get(WebFlowConstants.SELECTED_POSTAL_ADDR);
 		   
-		Boolean entryPaymentDetails = sessionMap.getBoolean(WebFlowConstants.PAYPAL_GETDETAILS_COMPLETED);
+		Boolean entryHasPayment = sessionMap.getBoolean(WebFlowConstants.PAYPAL_GETDETAILS_COMPLETED);
+		
+		PaymentDetails paymentDetails = (PaymentDetails)sessionMap.get(WebFlowConstants.PAYMENT_DETAILS);
 		
 		viewScope.put(EntryKey.EntryCustomer.name(), entryCustomer);
 		
 		viewScope.put(EntryKey.EntrySelectedAddress.name(), entrySelectedAddress);
 		
-		viewScope.put(EntryKey.EntryPaymentDetails.name(), entryPaymentDetails);
+		viewScope.put(EntryKey.EntryDetailsCompleted.name(), entryHasPayment);
 		
+		viewScope.put(EntryKey.EntryDetails.name(), paymentDetails);		
 		
 	}
 	
@@ -88,10 +98,10 @@ public class EvalApplicationState {
 		//debugViewScope("Login", entryCustomer, entrySelectedAddress, entryPaymentDetails);
 		
 		boolean expectedOnEnter = entryCustomer == null
-				&& entrySelectedAddress == null && entryPaymentDetails == null;		
+				&& entrySelectedAddress == null && entryHasDetails == null;		
 		
 		boolean expectedOnRender = currentCustomer == null && currentSelectedAddress == null 
-				&& currentPaymentDetails == null; 
+				&& currentHasDetails == null; 
 		
 		evalExpectedState(expectedOnEnter, "on-enter", "evalLogin", "");
 		
@@ -111,10 +121,10 @@ public class EvalApplicationState {
 		
 		//debugViewScope("evalSelectAddress", entryCustomer, entrySelectedAddress, entryPaymentDetails);
 		
-		boolean expectedOnEnter = entryCustomer != null &&  entryPaymentDetails == null;		
+		boolean expectedOnEnter = entryCustomer != null &&  entryHasDetails == null;		
 		
 		boolean expectedOnRender = currentCustomer != null && currentSelectedAddress == entrySelectedAddress 
-				&& currentPaymentDetails == null; 
+				&& currentHasDetails == null; 
 		
         String detail = currentSelectedAddress != entrySelectedAddress ?
     	    		"Selected address on-entry and in current session are not equal" : "";
@@ -135,10 +145,10 @@ public class EvalApplicationState {
 		//	debugViewScope("paymentButtonView", entryCustomer, entrySelectedAddress, entryPaymentDetails);
 			
 			boolean expectedOnEnter = entryCustomer != null &&  entrySelectedAddress != null
-					&& entryPaymentDetails == null;			
+					&& entryHasDetails == null;			
 			
 			boolean expectedOnRender = currentCustomer != null && currentSelectedAddress != null
-					&& currentPaymentDetails == null; 
+					&& currentHasDetails == null; 
 			
 			evalExpectedState(expectedOnEnter, "on-enter", "evalPaymentButtonView", "");
 				
@@ -156,14 +166,17 @@ public class EvalApplicationState {
 			//debugViewScope("paymentDetailView", entryCustomer, entrySelectedAddress, entryPaymentDetails);
 			
 			boolean expectedOnEnter = entryCustomer != null &&  entrySelectedAddress != null
-					&& entryPaymentDetails != null ;				
+					&& entryHasDetails != null && entryPaymentDetails.getTransactionId() == null ;				
 			
 			boolean expectedOnRender = currentCustomer != null && currentSelectedAddress != null
-					&& currentPaymentDetails != null; 
+					&& currentHasDetails != null && currentPaymentDetails.getTransactionId() == null;
 			
-			evalExpectedState(expectedOnEnter, "on-enter", "evalPaymentDetailView", "");
+			evalExpectedState(expectedOnEnter, "on-enter", "evalPaymentDetailView", "");		
 			
-			evalExpectedState(expectedOnRender, "on-render","evalPaymentDetailView", "");			
+			String issue = currentPaymentDetails.getTransactionId() != null ?
+					"Entering authorize view after payment completed: Transaction Id obtained." : "";
+			
+			evalExpectedState(expectedOnRender, "on-render","evalPaymentDetailView", issue);			
 			
 	}
 	
@@ -175,11 +188,11 @@ public class EvalApplicationState {
 		
 		this.initEntrySessionState(ctx);
 		
-		debugViewScope("postalEditView", entryCustomer, entrySelectedAddress, entryPaymentDetails);
+		debugViewScope("postalEditView", entryCustomer, entrySelectedAddress, entryHasDetails);
 		
-		boolean expectedOnEnter = entryPaymentDetails == null; //Customer may be null if creating		
+		boolean expectedOnEnter = entryHasDetails == null; //Customer may be null if creating		
 		 
-		boolean expectedOnRender = entryCustomer == currentCustomer && currentPaymentDetails == null;				
+		boolean expectedOnRender = entryCustomer == currentCustomer && currentHasDetails == null;				
 			
         evalExpectedState(expectedOnEnter, "on-enter", "evalPostalEditView", "");
         
@@ -222,14 +235,14 @@ public class EvalApplicationState {
 			if(phase.contentEquals("on-entry")) {
 				
 				error = genErrText(phase, entryCustomer, entrySelectedAddress, 
-						entryPaymentDetails, detail);
+						entryHasDetails, detail);
 				
 				EhrLogger.throwIllegalArg(this.getClass(), method, error);
 			}
 			else if(phase.contentEquals("on-render")) {
 				
                 error = genErrText("on-render", currentCustomer, currentSelectedAddress, 
-                		currentPaymentDetails, detail);
+                		currentHasDetails, detail);
 				
 				throwFlowNavigation(error, method);
 			}				
