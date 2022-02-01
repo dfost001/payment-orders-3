@@ -8,6 +8,7 @@ jquery*.*
 .classpath
 .project
 .metadata
+note*.*
 src/main/java/com/mycompany/hosted/http/*
 src/main/webapp/WEB-INF/flows/checkout/resources/fonts/
 src/main/webapp/WEB-INF/flows/checkout/resources/javascript/json.min.js
