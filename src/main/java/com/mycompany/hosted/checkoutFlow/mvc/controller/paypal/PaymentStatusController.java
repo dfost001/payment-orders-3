@@ -40,6 +40,10 @@ public class PaymentStatusController {
 		
 		PaymentDetails details = (PaymentDetails)session.getAttribute(WebFlowConstants.PAYMENT_DETAILS);
 		
+		if(details == null)
+			EhrLogger.throwIllegalArg(this.getClass(), "showOrderStatus", 
+					"PaymentDetails session attribute is null");
+		
 		OrderPayment order = (OrderPayment)	session.getAttribute(WebFlowConstants.ORDER_ENTITY_VALUE);		
 		
 		debugPrintOrThrowOrder (order);		
