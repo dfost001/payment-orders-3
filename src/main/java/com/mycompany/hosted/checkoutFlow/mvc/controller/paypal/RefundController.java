@@ -23,6 +23,7 @@ import com.mycompany.hosted.checkoutFlow.paypal.orders.PaymentDetails;
 import com.mycompany.hosted.checkoutFlow.paypal.orders.PaymentDetails.CaptureStatusEnum;
 import com.mycompany.hosted.errordetail.ErrorDetailBean;
 import com.mycompany.hosted.exception_handler.EhrLogger;
+import com.mycompany.hosted.exception_handler.MvcNavigationException;
 import com.mycompany.hosted.model.Customer;
 import com.mycompany.hosted.model.order.LineItemPayment;
 import com.mycompany.hosted.model.order.OrderPayment;
@@ -52,7 +53,7 @@ public class RefundController {
 	
 	@RequestMapping(value="/refund/request", method=RequestMethod.GET)
 	public String refund(HttpSession session, 
-			RedirectAttributes redirectAttrs) throws CheckoutHttpException {
+			RedirectAttributes redirectAttrs) throws CheckoutHttpException, MvcNavigationException {
 		
 		PaymentDetails details = (PaymentDetails)session.getAttribute(WebFlowConstants.PAYMENT_DETAILS);
 		
@@ -65,6 +66,8 @@ public class RefundController {
 			
 			return "redirect:" + REDIRECT_STATUS_URL + order.getOrderId();
 		}
+		
+		evalTransactionId(details); //throws navigation exception if transaction id is empty
 		
 		CapturesRefundRequest request = new CapturesRefundRequest(details.getTransactionId());
 		
@@ -116,6 +119,19 @@ public class RefundController {
 		}	
 		
 		return false;
+	}
+	
+	private void evalTransactionId(PaymentDetails details) throws MvcNavigationException {
+		
+		String err = "";
+
+		if(details.getTransactionId() == null) {
+			err = EhrLogger.doMessage(this.getClass(), "refund", "Transaction Id is null.");
+			
+			err += "Assuming browser navigation after details obtained during a 2nd transaction";
+			
+			throw new MvcNavigationException(err);
+		}
 	}
 	
 	private void initPaymentDetails(PaymentDetails details, Refund refund, String json) {

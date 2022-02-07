@@ -37,7 +37,7 @@ import org.springframework.web.util.UrlPathHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.mycompany.hosted.exception_handler.MyDefaultExceptionResolver;
-
+import com.mycompany.hosted.exception_handler.NavigationExceptionResolver;
 //import com.mycompany.hosted.exception_handler.CheckoutHttpExceptionResolver;
 import com.mycompany.hosted.formatter.DateFormatter;
 import com.mycompany.hosted.formatter.TextFormatAnnotationFormatterFactory;
@@ -143,10 +143,10 @@ public class MyConfigurer implements WebMvcConfigurer {
 				exceptionResolvers.set(i, new MyDefaultExceptionResolver());
          }
          
-        // HandlerExceptionResolver[] custom = {new CheckoutHttpExceptionResolver() };
+         HandlerExceptionResolver[] custom = {new NavigationExceptionResolver() };
          
-        /* for(int i = 0; i < custom.length; i++)
-        	 exceptionResolvers.add(0, custom[i]);*/
+         for(int i = 0; i < custom.length; i++)
+        	 exceptionResolvers.add(0, custom[i]);
          
        //  System.out.println("Printing exceptionResolvers: ") ;
          
