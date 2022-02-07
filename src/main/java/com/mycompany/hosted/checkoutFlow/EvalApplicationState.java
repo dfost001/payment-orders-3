@@ -165,16 +165,25 @@ public class EvalApplicationState {
 			
 			//debugViewScope("paymentDetailView", entryCustomer, entrySelectedAddress, entryPaymentDetails);
 			
+			String issue = "";
+			
 			boolean expectedOnEnter = entryCustomer != null &&  entrySelectedAddress != null
-					&& entryHasDetails != null && entryPaymentDetails.getTransactionId() == null ;				
+					&& entryHasDetails != null && entryPaymentDetails.getTransactionId() == null ;	
+			
+			if(entryHasDetails != null && entryPaymentDetails.getTransactionId() != null)
+				 issue = "Details not reset on 2nd transaction. Transaction Id should be null";
+			
+			evalExpectedState(expectedOnEnter, "on-enter", "evalPaymentDetailView", issue);
 			
 			boolean expectedOnRender = currentCustomer != null && currentSelectedAddress != null
-					&& currentHasDetails != null && currentPaymentDetails.getTransactionId() == null;
+					&& currentHasDetails != null && currentPaymentDetails.getTransactionId() == null;					
 			
-			evalExpectedState(expectedOnEnter, "on-enter", "evalPaymentDetailView", "");		
+			if(currentHasDetails != null && currentPaymentDetails.getTransactionId() != null)
+				EhrLogger.throwIllegalArg(this.getClass(), "evalPaymentDetailView", 
+						"DetailsCompleted not removed from session when payment captured.");
 			
-			String issue = currentPaymentDetails.getTransactionId() != null ?
-					"Entering authorize view after payment completed: Transaction Id obtained." : "";
+			issue = currentPaymentDetails.getTransactionId() != null ?
+					"Entering details/authorize view after payment completed: Transaction Id obtained." : "";
 			
 			evalExpectedState(expectedOnRender, "on-render","evalPaymentDetailView", issue);			
 			
