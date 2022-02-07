@@ -23,8 +23,10 @@ import com.mycompany.hosted.model.order.OrderPayment;
 import com.mycompany.hosted.model.order.OrderShipTo;
 /*
  * To do: 
- * get items (status) from Order
+ * get items and Id's (status) from Order
  * Remove PaymentDetails from session.
+ * Problem: Redirect request cannot be under cache-control. Transaction Id may
+ * be empty for browser navigation.
  */
 @Controller
 @Scope(WebApplicationContext.SCOPE_SESSION)
@@ -40,9 +42,7 @@ public class PaymentStatusController {
 		
 		PaymentDetails details = (PaymentDetails)session.getAttribute(WebFlowConstants.PAYMENT_DETAILS);
 		
-		if(details == null)
-			EhrLogger.throwIllegalArg(this.getClass(), "showOrderStatus", 
-					"PaymentDetails session attribute is null");
+		evalPaymentDetails(details);
 		
 		OrderPayment order = (OrderPayment)	session.getAttribute(WebFlowConstants.ORDER_ENTITY_VALUE);		
 		
@@ -88,6 +88,20 @@ public class PaymentStatusController {
 		
 		return "jsp/receipt";
 		
+	}
+	
+	private void evalPaymentDetails(PaymentDetails details) {
+		
+		String err="";
+		
+		if(details == null)
+			err = "PaymentDetails in session is null";
+		else if(details.getTransactionId() == null)
+			err = "Captured Transaction Id in PaymentDetails is not initialized";
+		if(!err.isEmpty())
+			
+			EhrLogger.throwIllegalArg(this.getClass(), "showOrderStatus", err);
+					
 	}
 	
 	private void debugPrintOrThrowOrder(OrderPayment order) {
