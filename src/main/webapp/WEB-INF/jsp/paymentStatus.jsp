@@ -278,7 +278,7 @@
         	   $(this).next().slideToggle();
         	   
            });
-           
+          
            var el = $("input[name='ALREADY_REFUNDED']");
            if(el && el.val() === "true")                
                $("#btnRefund").prop("disabled", true)

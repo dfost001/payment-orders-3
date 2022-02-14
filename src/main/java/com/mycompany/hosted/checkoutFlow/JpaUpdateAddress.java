@@ -1,7 +1,7 @@
 package com.mycompany.hosted.checkoutFlow;
 
 import java.io.Serializable;
-import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -100,7 +100,7 @@ public class JpaUpdateAddress implements Serializable{
 		
 	}
 	
-	private void debugPrintShipUpdate(Customer customer) {
+	/*private void debugPrintShipUpdate(Customer customer) {
 		
 		List<ShipAddress> related = customer.getShipAddressList();
 		
@@ -109,7 +109,7 @@ public class JpaUpdateAddress implements Serializable{
 		for(ShipAddress ship : related) {
 			System.out.println("id=" + ship.getId());
 		}
-	}
+	}*/
 	
 	private void doException(String method, String message) {
 		

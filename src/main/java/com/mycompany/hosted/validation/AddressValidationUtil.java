@@ -8,8 +8,6 @@ import com.mycompany.hosted.model.validation.States;
 import com.mycompany.hosted.exception_handler.EhrLogger;
 import com.mycompany.hosted.checkoutFlow.jpa.SupportedValidation;
 //import com.mycompany.hosted.checkoutFlow.jpa.SupportedValidationImpl;
-import com.mycompany.hosted.checkoutFlow.jpa.SupportedValidationImpl;
-
 
 @Component
 public class AddressValidationUtil {

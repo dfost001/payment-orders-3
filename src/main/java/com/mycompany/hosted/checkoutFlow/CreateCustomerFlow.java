@@ -15,7 +15,7 @@ import org.springframework.webflow.execution.RequestContext;
 
 
 import com.mycompany.hosted.model.Customer;
-
+import com.mycompany.hosted.model.PostalAddress;
 import com.mycompany.hosted.exception_handler.EhrLogger;
 import com.mycompany.hosted.checkoutFlow.jpa.CustomerJpa;
 import com.mycompany.hosted.checkoutFlow.jpa.CustomerNotFoundException;
@@ -59,11 +59,17 @@ public class CreateCustomerFlow {
 	
 	
 	/*
-	 * evalCustomerOnEditView assumes either no customer or valid Customer in session
+	 * To do: Are we retrieving or inserting.
+	 * If inserting, do not validate.
+	 *
 	 */
 	public void customerIntoSession(Customer customer, RequestContext ctx) {
 		
-		if(customer == null) return; //Customer insertion cancelled
+		if(customer == null) 
+			this.throwIllegalArg("Retrieved Customer has not been added to the session.",					
+					 "customerIntoSession",
+					 null) ;
+			
 		
 		if(customer.getId() == null || customer.getId().equals(0)) {
 			
@@ -73,15 +79,29 @@ public class CreateCustomerFlow {
 					 null) ;
 		}			 
 		
-        MessageContext mctx = vUtil.validate(customer);
+       MessageContext mctx = vUtil.validate((PostalAddress)customer);
 		
 		if(mctx.hasErrorMessages())
-			 this.throwIllegalArg("", "customerIntoSession", mctx);
+			 this.throwIllegalArg("", "customerIntoSession", mctx); 
 		
 		SharedAttributeMap<Object> sharedSession = ctx.getExternalContext()
 				.getSessionMap(); 
 		
 		sharedSession.put(WebFlowConstants.CUSTOMER_KEY, customer);
+		
+	}
+	/*
+	 * Note comparison of session Customer at on-entry and on-render is not possible
+	 */
+	public void customerIntoSessionOnCancel(Customer customer, RequestContext ctx,
+			MyFlowAttributes myFlowAttrs) {
+		
+		if(myFlowAttrs.isCustomerInsertion()) {
+			myFlowAttrs.setCustomerInsertion(false);
+			return;
+		}
+		
+		customerIntoSession(customer,ctx);
 		
 	}
 	

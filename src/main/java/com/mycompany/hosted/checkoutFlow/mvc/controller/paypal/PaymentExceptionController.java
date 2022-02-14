@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.mycompany.hosted.checkoutFlow.exceptions.CheckoutErrModel;
 import com.mycompany.hosted.checkoutFlow.exceptions.CheckoutHttpException;
 import com.mycompany.hosted.exception_handler.EhrLogger;
+import com.mycompany.hosted.exception_handler.MvcNavigationException;
 import com.paypal.http.exceptions.HttpException;
 
 /*
@@ -27,13 +28,12 @@ public class PaymentExceptionController {
 		private final String errFatal = "An error occurred. Please contact support to complete your order.";		
 		
 		@GetMapping(value="paymentException/initErrorModel")
-		public String  initModel(HttpSession session, ModelMap model) {				
-			
+		public String  initModel(HttpSession session, ModelMap model) throws MvcNavigationException {					
 			
 			CheckoutHttpException ex = (CheckoutHttpException)session.getAttribute("checkoutHttpException");
 			
 			if(ex == null) // change to NavigationException, cannot change to static view since link contains parameter
-				EhrLogger.throwIllegalArg(this.getClass(),"initErrorModel", "CheckoutHttpException is null");			
+				this.throwMvcNavigationException();
 			
 			CheckoutErrModel errModel = initErrorModel(ex);	
 			
@@ -45,6 +45,17 @@ public class PaymentExceptionController {
 			  session.removeAttribute("checkoutHttpException");
 			
 			return "jsp/checkoutErrSupport";
+			
+		}
+		
+		private void throwMvcNavigationException() throws MvcNavigationException {
+			
+            String err = EhrLogger.doMessage(this.getClass(), "initModel", 
+            		"CheckoutHttpException is not in the session.");
+			
+			err += "Assuming browser navigation after excpetion removed";
+			
+			throw new MvcNavigationException(err);
 			
 		}
 		

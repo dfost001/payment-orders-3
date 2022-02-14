@@ -62,6 +62,7 @@
         <transition on="create" to="updateShipAddressSub">        
             <evaluate expression="createCustomerFlow.newCustomer()" result="flashScope.postalAddress" />            
             <evaluate expression="myFlowAttrs.evalFormTitle(postalAddress)" />
+            <evaluate expression="myFlowAttrs.setCustomerInsertion(true)" />
         </transition> 
         
         <transition on="cancel"     to="mvcHome"  />
@@ -129,7 +130,9 @@
          <input name="originalCustomer" value="externalContext.sessionMap.customer" />        
              
          <transition on="cancelled" to="evalPaymentState" >    
-            <evaluate expression="createCustomerFlow.customerIntoSession(currentEvent.attributes.customerCopy, flowRequestContext)" />
+            <evaluate 
+            expression="createCustomerFlow.customerIntoSessionOnCancel
+                          (currentEvent.attributes.customerCopy, flowRequestContext, myFlowAttrs)" />
          </transition>       
          
          <transition on="updated" to="selectShipAddress">          

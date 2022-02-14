@@ -128,7 +128,7 @@ public class RefundController {
 		if(details.getTransactionId() == null) {
 			err = EhrLogger.doMessage(this.getClass(), "refund", "Transaction Id is null.");
 			
-			err += "Assuming browser navigation after details obtained during a 2nd transaction";
+			err += "Assuming browser navigation after details reset during a 2nd transaction";
 			
 			throw new MvcNavigationException(err);
 		}

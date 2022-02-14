@@ -167,6 +167,8 @@ public class EvalApplicationState {
 			
 			String issue = "";
 			
+			evalNullPaymentDetails();
+			
 			boolean expectedOnEnter = entryCustomer != null &&  entrySelectedAddress != null
 					&& entryHasDetails != null && entryPaymentDetails.getTransactionId() == null ;	
 			
@@ -180,13 +182,27 @@ public class EvalApplicationState {
 			
 			if(currentHasDetails != null && currentPaymentDetails.getTransactionId() != null)
 				EhrLogger.throwIllegalArg(this.getClass(), "evalPaymentDetailView", 
-						"DetailsCompleted not removed from session when payment captured.");
-			
-			issue = currentPaymentDetails.getTransactionId() != null ?
-					"Entering details/authorize view after payment completed: Transaction Id obtained." : "";
+						"currentHasDetails non-null and PaymentDetails#transactionId has a value.");
+			else if(currentHasDetails == null && currentPaymentDetails.getTransactionId() == null)
+				EhrLogger.throwIllegalArg(this.getClass(), "evalPaymentDetailView", 
+						"currentHasDetails removed from session and PaymentDetails#transactionId is null.");
+			else if(currentHasDetails == null && currentPaymentDetails.getTransactionId() != null)
+			   issue = "Entering details/authorize view after payment completed: Transaction Id obtained." ;
 			
 			evalExpectedState(expectedOnRender, "on-render","evalPaymentDetailView", issue);			
 			
+	}
+	
+	private void evalNullPaymentDetails() {
+		
+		String msg = "";
+		
+		if(this.entryPaymentDetails == null)
+			msg = "PaymentDetails on-entry have not been created";
+		if(this.currentPaymentDetails == null)
+			msg="PaymentDetails on-render is null";
+		if(!msg.isEmpty())
+			EhrLogger.throwIllegalArg(this.getClass(), "evalPaymentDetailsView", msg);
 	}
 	
 	public void evalPostalEditView(RequestContext ctx) 
@@ -199,7 +215,7 @@ public class EvalApplicationState {
 		
 		debugViewScope("postalEditView", entryCustomer, entrySelectedAddress, entryHasDetails);
 		
-		boolean expectedOnEnter = entryHasDetails == null; //Customer may be null if creating		
+		boolean expectedOnEnter = entryHasDetails == null; //Session Customer may be null if creating		
 		 
 		boolean expectedOnRender = entryCustomer == currentCustomer && currentHasDetails == null;				
 			
@@ -270,7 +286,7 @@ public class EvalApplicationState {
 		 
 		 err += ". ";
 		 
-		 err += currentDetails == null ? "paymentDetails is null" : "paymentDetails is non-null";
+		 err += currentDetails == null ? "hasDetails is false/null" : "hasDetails is true/non-null";
 		 
 		 err += ". " + info;
 		 

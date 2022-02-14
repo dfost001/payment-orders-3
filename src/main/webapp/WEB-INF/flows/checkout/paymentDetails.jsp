@@ -10,7 +10,7 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">    
-	<title>All books for our store</title>
+	<title>Payment Details</title>
 	 <link
 	   href="${pageContext.request.contextPath}/spring/resources/css/bootstrap.css"	rel="Stylesheet" />
    <link

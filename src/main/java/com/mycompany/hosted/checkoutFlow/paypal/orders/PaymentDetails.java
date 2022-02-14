@@ -42,17 +42,17 @@ public class PaymentDetails implements Serializable{
 	
 	private String payPalResourceId;
 	
+    private String payerId;
+	
+	private String transactionId;
+	
 	private String billingName;
 	
 	private String billingEmail;
 	
 	private String json;
 	
-	private String refundJson;
-	
-	private String payerId;
-	
-	private String transactionId;
+	private String refundJson;	
 	
 	private String createTime;
 	

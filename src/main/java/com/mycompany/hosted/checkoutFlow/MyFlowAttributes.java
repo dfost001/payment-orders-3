@@ -33,6 +33,8 @@ public class MyFlowAttributes implements Serializable {
 	
 	private final String ALL_MESSAGES = "allMessages" ;
 	
+	private boolean isCustomerInsertion = false;
+	
 	
 	public List<CartItem> getFlowCartItems() {
 		if(flowCartItems == null)
@@ -57,6 +59,16 @@ public class MyFlowAttributes implements Serializable {
 		return formTitle;
 	}
 	
+	
+	
+	public boolean isCustomerInsertion() {
+		return isCustomerInsertion;
+	}
+
+	public void setCustomerInsertion(boolean isCustomerInsertion) {
+		this.isCustomerInsertion = isCustomerInsertion;
+	}
+
 	public void preserveMessagesIntoSession(RequestContext request, MessageContext msgCtx) {
 		
 		Message[] messages = null;

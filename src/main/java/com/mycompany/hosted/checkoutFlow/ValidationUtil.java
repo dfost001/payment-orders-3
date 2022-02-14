@@ -75,9 +75,9 @@ public class ValidationUtil  implements MessageSourceAware{
 		
 		if(!set.isEmpty())	{
 			
-		     addMessages(set, mctx, address.getClass());
+		    // addMessages(set, mctx, address.getClass());
 		     
-		    
+		     addMessages(set, mctx, PostalAddress.class);		    
 		}
 		
 	}
@@ -167,6 +167,9 @@ public class ValidationUtil  implements MessageSourceAware{
 	    		   Object[] args, String defaultText)  {
 		 
 		 Class<?> returnType = null;
+		 
+		 System.out.println("ValidationUtil#initMessageResolver class="
+				 + validatedClz.getSimpleName() + "field=" + field);
 		 
 		 try {
 			 

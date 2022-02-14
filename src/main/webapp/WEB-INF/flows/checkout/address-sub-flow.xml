@@ -9,12 +9,13 @@
    
    <input name="myFlowAttrs" />   
    
-   <input name="originalCustomer" />
-	
-	<on-start>	
+   <input name="originalCustomer" />	
+   
+    <on-start>	
 		 <evaluate expression="cloneUtil.clone(addressIn)" result="flowScope.address" />		   
     </on-start>
-
+   
+   
 	<view-state id="addressView" view="customerFormSub.jsp" model="address">
 	
 	    <on-entry>	  
@@ -53,8 +54,16 @@
 	  <output name="customerCopy" value="customer" />	
 	</end-state>
 	
-	<end-state id="home" />
+	<end-state id="home" >
+	   <on-entry>
+	      <evaluate expression="myFlowAttrs.removeSessionMessages(flowRequestContext)"/>
+	   </on-entry>
+	</end-state>
 	
-	<end-state id="cart"/>
+	<end-state id="cart">
+	    <on-entry>
+	      <evaluate expression="myFlowAttrs.removeSessionMessages(flowRequestContext)"/>
+	    </on-entry>
+	</end-state>
              
 </flow>
