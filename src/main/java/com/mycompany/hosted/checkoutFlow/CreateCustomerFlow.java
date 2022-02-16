@@ -63,10 +63,11 @@ public class CreateCustomerFlow {
 	 * If inserting, do not validate.
 	 *
 	 */
-	public void customerIntoSession(Customer customer, RequestContext ctx) {
+	public void customerIntoSession(Customer customer,
+			RequestContext ctx, MyFlowAttributes myFlowAttrs) {
 		
 		if(customer == null) 
-			this.throwIllegalArg("Retrieved Customer has not been added to the session.",					
+			this.throwIllegalArg("Customer has not been added to the session.",					
 					 "customerIntoSession",
 					 null) ;
 			
@@ -77,7 +78,12 @@ public class CreateCustomerFlow {
 					 + ctx.getCurrentState().getId(),
 					 "customerIntoSession",
 					 null) ;
-		}			 
+		}	
+		
+		if(myFlowAttrs.isCustomerInsertion()) {
+			myFlowAttrs.setCustomerInsertion(false);
+			return;
+		}	
 		
        MessageContext mctx = vUtil.validate((PostalAddress)customer);
 		
@@ -101,7 +107,7 @@ public class CreateCustomerFlow {
 			return;
 		}
 		
-		customerIntoSession(customer,ctx);
+		customerIntoSession(customer,ctx, myFlowAttrs);
 		
 	}
 	

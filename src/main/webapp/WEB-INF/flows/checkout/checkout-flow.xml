@@ -136,8 +136,8 @@
          </transition>       
          
          <transition on="updated" to="selectShipAddress">          
-             <evaluate expression="jpaUpdateAddress.update(currentEvent.attributes.postalAddress, flowRequestContext)"
-                result="requestScope.customer" />              
+             <evaluate expression="jpaUpdateAddress.update(currentEvent.attributes.postalAddress,
+                 flowRequestContext, myFlowAttrs)"  result="requestScope.customer" />              
              <evaluate expression="createCustomerFlow.customerIntoSession(customer, flowRequestContext)" />    
              <evaluate expression="selectAddressFlow.updateSessionSelectionIfEdited(flowRequestContext, 
                                    currentEvent.attributes.postalAddress)"    />
