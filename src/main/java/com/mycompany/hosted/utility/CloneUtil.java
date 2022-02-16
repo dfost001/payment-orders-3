@@ -278,7 +278,7 @@ public class CloneUtil {
 		    	String methodName = "get" + fieldName.substring(0,1).toUpperCase() +
 		    			fieldName.substring(1);
 		    	
-		    	System.out.println("CloneUtil#getReturnType: methodName=" + methodName);
+		    	//System.out.println("CloneUtil#getReturnType: methodName=" + methodName);
 		    	
 		    	Method method = containerClass.getDeclaredMethod(methodName);
 		    	
