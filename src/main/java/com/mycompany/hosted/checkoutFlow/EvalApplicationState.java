@@ -185,7 +185,7 @@ public class EvalApplicationState {
 						"currentHasDetails non-null and PaymentDetails#transactionId has a value.");
 			else if(currentHasDetails == null && currentPaymentDetails.getTransactionId() == null)
 				EhrLogger.throwIllegalArg(this.getClass(), "evalPaymentDetailView", 
-						"currentHasDetails removed from session and PaymentDetails#transactionId is null.");
+						"currentHasDetails removed from session (Transaction completed?) and PaymentDetails#transactionId is null.");
 			else if(currentHasDetails == null && currentPaymentDetails.getTransactionId() != null)
 			   issue = "Entering details/authorize view after payment completed: Transaction Id obtained." ;
 			
