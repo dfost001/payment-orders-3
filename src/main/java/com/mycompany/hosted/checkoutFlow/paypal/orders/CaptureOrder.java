@@ -63,7 +63,7 @@ public class CaptureOrder {
 		 
 		 try {
 		 
-		evalDetails(details);		
+		evalDetails(details);	//throws exception for null object or empty resource id	
 		
 	    OrdersCaptureRequest request = new OrdersCaptureRequest(details.getPayPalResourceId());
 	    
@@ -80,7 +80,7 @@ public class CaptureOrder {
 	    if(order == null)
 	    	this.throwIllegalArg("Order returned in HttpResponse is null.");	
 	    
-	    debugPrintOrder(order);
+	    debugPrintOrder(order); //throws Runtime for uninitialized fields to catch block
 	    
 	    String json = GetOrderDetails.debugPrintJson(response);	    
 	    
@@ -132,36 +132,63 @@ public class CaptureOrder {
 	  
 	  private void debugPrintOrder(Order order) {
 		  
-		   System.out.println("Status: " + order.status());
+		  String err = "Order contains uninitialized fields: ";
+		  
+		   System.out.println("Printing captured order: ");
+		  
+		   System.out.println("Status: " + order.status()); //May not be initialized
 		      
-		      System.out.println("Order ID: " + order.id());
-		      
-		   /*   System.out.println("Links: ");
-		      for (LinkDescription link : order.links()) {
-		        System.out.println("\t" + link.rel() + ": " + link.href());
-		      }*/
-		      
-		      System.out.println("CaptureOrder#print: Capture ids:");
-		      
-		      PurchaseUnit purchaseUnit = order.purchaseUnits().get(0);
-		      
-		      PaymentCollection payments = purchaseUnit.payments();
-		      
-		      List<Capture> captures = payments.captures();
-		      
-		      if(captures == null || captures.isEmpty())
-		    	  System.out.println("CaptureOrder#printOrder: PaymentCollection has no captures");
-		      
+		   System.out.println("Order ID: " + order.id());
 		   
-		    	  
-		        for (Capture capture : captures) {
-		          System.out.println("\t" + "id=" + capture.id());
-		          System.out.println("\t" + "status=" + capture.status());
-		         // System.out.println("\t" + "reason=" + capture.captureStatusDetails().reason());
-		        }
+		   if(order.paymentSource() == null)
+	        	System.out.println("paymentSource is null"); 		      
+		 
+		   
+		   List<PurchaseUnit> units = order.purchaseUnits();
+		   
+		   if(units == null) {
+			   err += " Order#List<PurchaseUnit> ";
+			   System.out.println(err);
+			   throwIllegalArg(err);
+		   }   
+		      
+		   PurchaseUnit purchaseUnit = order.purchaseUnits().get(0);
+		   
+		   if(purchaseUnit == null) {
+			   err += " Order#PurchaseUnit ";
+			   System.out.println(err);
+			   throwIllegalArg(err);
+		   }
+		      
+		   PaymentCollection payments = purchaseUnit.payments();
+		   
+		   if(payments == null) {
+			   err += " Order#PaymentCollection ";
+			   System.out.println(err);
+			   throwIllegalArg(err);
+		   }
+		      
+		   List<Capture> captures = payments.captures();
+		      
+		   if(captures == null || captures.isEmpty()) {
+               err += " List<Capture> "	;	
+               System.out.println(err);
+			   throwIllegalArg(err);
+		   }
+		   
+		   Capture capture = captures.get(0);
+		   
+		   if(capture == null || isNullOrEmpty(capture.id())) {
+			   err += " Capture#id ";
+			   System.out.println(err);
+			   throwIllegalArg(err);
+		   }  	  
 		        
-		        if(order.paymentSource() == null)
-		        	System.out.println("paymentSource is null");
+		   for (Capture cap : captures) {
+		          System.out.println("\t" + "id=" + cap.id());
+		          System.out.println("\t" + "status=" + cap.status());
+		        
+		    }
 		     
 	  }
 	  
@@ -175,15 +202,13 @@ public class CaptureOrder {
 		  
 	      List<Capture> captures = payments.captures();	      
 	      
-	      Capture capture = captures.get(0);
-	      
-	      System.out.println("CaptureOrder#initCaptureId: capture.status()=" + capture.status());
-	      
-	      details.setCaptureStatus(CaptureStatusEnum.valueOf(capture.status()));
+	      Capture capture = captures.get(0);	      
 	      
 	      //If statusDetails is not null, then status is not equal to COMPLETED/SAVED
 	      
 	      if(capture.captureStatusDetails() != null) {
+	    	  
+	    	  System.out.println("CaptureOrder#initCaptureId: capture.status()=" + capture.status());
 	    	  
 	    	  String reason = capture.captureStatusDetails().reason();
 	    	 
@@ -192,6 +217,10 @@ public class CaptureOrder {
 	    	  return "failed";
 	    	  
 	      } else {    
+	    	  
+	    	  System.out.println("CaptureOrder#initCaptureId: capture.status()=" + capture.status());
+		      
+		      details.setCaptureStatus(CaptureStatusEnum.valueOf(capture.status()));
 	    	  
 	    	  details.setTransactionId(capture.id());
 		      
@@ -202,5 +231,10 @@ public class CaptureOrder {
 		  
 	  }
 	  
-	 
+	 private boolean isNullOrEmpty(String value) {
+		 
+		 if(value == null || value.isEmpty())
+			 return true;
+		 return false;
+	 }
 }
