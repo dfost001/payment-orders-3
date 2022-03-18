@@ -114,20 +114,21 @@ public class PaymentStatusController {
 		Customer custId = order.getCustomerId();
 		
 		if(custId == null)
-			err="Customer ";
+			err=" Customer ";
 		
 		OrderShipTo shipTo = order.getOrderShipTo();
 		
 		if(shipTo == null)
-			err = "OrderShipTo ";
+			err += " OrderShipTo ";
 		
 		List<LineItemPayment> list= order.getLineItemPayments();
 		
 		if(list == null)
-			err = "List<LineItemPayment>";
+			err += " List<LineItemPayment> ";
 		
 		if(!err.isEmpty()) {
-			err = "Null attributes: " + err;
+			err = "Null OrderPayment attributes: " + err;
+			System.out.println(err);
 			EhrLogger.throwIllegalArg(this.getClass(),"debugPrintOrder", err);
 		}
 			
