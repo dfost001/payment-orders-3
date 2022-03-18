@@ -64,7 +64,7 @@ public class CreateCustomerFlow {
 	 *
 	 */
 	public void customerIntoSession(Customer customer,
-			RequestContext ctx, MyFlowAttributes myFlowAttrs) {
+			RequestContext ctx) {
 		
 		if(customer == null) 
 			this.throwIllegalArg("Customer has not been added to the session.",					
@@ -78,12 +78,7 @@ public class CreateCustomerFlow {
 					 + ctx.getCurrentState().getId(),
 					 "customerIntoSession",
 					 null) ;
-		}	
-		
-		if(myFlowAttrs.isCustomerInsertion()) {
-			myFlowAttrs.setCustomerInsertion(false);
-			return;
-		}	
+		}		
 		
        MessageContext mctx = vUtil.validate((PostalAddress)customer);
 		
@@ -97,7 +92,7 @@ public class CreateCustomerFlow {
 		
 	}
 	/*
-	 * Note comparison of session Customer at on-entry and on-render is not possible
+	 * Exit on a cancelled customer insertion
 	 */
 	public void customerIntoSessionOnCancel(Customer customer, RequestContext ctx,
 			MyFlowAttributes myFlowAttrs) {
@@ -107,7 +102,7 @@ public class CreateCustomerFlow {
 			return;
 		}
 		
-		customerIntoSession(customer,ctx, myFlowAttrs);
+		customerIntoSession(customer,ctx);
 		
 	}
 	
