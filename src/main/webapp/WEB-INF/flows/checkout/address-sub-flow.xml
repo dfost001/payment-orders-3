@@ -4,16 +4,19 @@
              http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
             
 
-       
-   <input name="addressIn"  />   
+   <!--     
+   <input name="addressIn"  />  -->
+   
+   <input name="addressIn"  value="flowScope.address" />
    
    <input name="myFlowAttrs" />   
    
    <input name="originalCustomer" />	
    
+    <!-- 
     <on-start>	
 		 <evaluate expression="cloneUtil.clone(addressIn)" result="flowScope.address" />		   
-    </on-start>
+    </on-start> -->
    
    
 	<view-state id="addressView" view="customerFormSub.jsp" model="address">
