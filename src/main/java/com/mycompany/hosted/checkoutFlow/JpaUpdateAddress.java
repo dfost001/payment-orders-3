@@ -40,7 +40,7 @@ public class JpaUpdateAddress implements Serializable{
 	/*
 	 * To do: replace evalBinding with validation
 	 */
-	public Customer update(PostalAddress addr, RequestContext ctx) {	
+	public Customer update(PostalAddress addr, RequestContext ctx, MyFlowAttributes flowAttrs) {	
 		
 		Customer customer = null;
 		
@@ -50,6 +50,8 @@ public class JpaUpdateAddress implements Serializable{
 		evalBinding(addr); //stub for ValidationUtil#validate
 		
 		if(Customer.class.isAssignableFrom(addr.getClass())) {
+			
+			flowAttrs.setCustomerInsertion(false);
 			
 			customer = processCustomerUpdate(addr, ctx);
 		}
