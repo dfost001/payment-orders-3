@@ -175,7 +175,7 @@
    <action-state id="getDetails">
         <evaluate expression="getOrderDetails.getOrder(flowRequestContext)" />                    
         <transition on="success"          to="showDetails"  >
-            <set name="flashScope.message"   value="messageContext.allMessages[0].text" />            
+            <set name="flashScope.allMessages"   value="messageContext.allMessages" />            
         </transition>
         <transition on="failed" to="paymentStatusFailed" />
         <transition on-exception="com.mycompany.hosted.checkoutFlow.exceptions.CheckoutHttpException"
@@ -185,7 +185,7 @@
    <view-state id="showDetails" view="paymentDetails.jsp">      
       <on-entry>      
           <evaluate expression="evalApplicationState.setViewScopeComparisonAttrs(flowRequestContext)" />       
-          <set name="viewScope.message"    value="flashScope.message"  />           
+          <set name="viewScope.allMessages"    value="flashScope.allMessages"  />           
       </on-entry>
             
       <on-render>      
