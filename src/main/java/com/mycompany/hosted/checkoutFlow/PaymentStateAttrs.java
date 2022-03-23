@@ -27,13 +27,15 @@ public class PaymentStateAttrs {
 			 .getExternalContext()
 			 .getSessionMap();
 	
-	if(errOnGetDetail) 
+	if(map.get(WebFlowConstants.PAYPAL_GETDETAILS_COMPLETED) != null) //Capture did not complete
+		return PaymentState.DETAILS_COMPLETED.name(); //HttpException on Capture or exit before capture, 
+	                      //return showDetails
+	
+	else if(errOnGetDetail) 
 	    return PaymentState.ERR_GET_DETAIL.name(); //HttpException on GetDetails, return showDetails
 	
-	else if(map.get(WebFlowConstants.PAYPAL_GETDETAILS_COMPLETED) != null) //Capture did not complete
-		return PaymentState.DETAILS_COMPLETED.name(); //HttpException on Capture or exit before capture, return showDetails
-	
-	else if(map.get(WebFlowConstants.SELECTED_POSTAL_ADDR) != null) //Card entry not completed, return paymentButton
+	else if(map.get(WebFlowConstants.SELECTED_POSTAL_ADDR) != null) //Card entry not completed, 
+		//return paymentButton
 		return PaymentState.SHIP_SELECTED.name();
 	
 	else if(map.get(WebFlowConstants.CUSTOMER_KEY) != null)//Customer retrieved, ShipAddress not selected
