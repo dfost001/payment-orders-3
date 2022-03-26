@@ -54,10 +54,10 @@
     
 	<jsp:include page="flowHeader.jsp" />
 	
-	<c:if test="${not empty message}">
+	<c:if test="${not empty allMessages}">
 	   <div class="alert alert-danger">
 	    <ul>	       
-	           <li>${message}</li>	       
+	           <li>${allMessages[0].text}</li>	       
 	    </ul>
 	   </div>
 	</c:if>
@@ -73,23 +73,11 @@
      
      <form action="${flowExecutionUrl}" method="post">
      
-       <c:choose>
-       <c:when test="${empty details.transactionId}">
-           <jsp:include page="paymentHeaderInclude/reviewPayment.jsp" />
-       </c:when>
-       <c:otherwise>
-           <jsp:include page="paymentHeaderInclude/paymentCompleted.jsp" />
-       </c:otherwise>    
-    </c:choose>
+      
+     <jsp:include page="paymentHeaderInclude/reviewPayment.jsp" />
      
-	 </form>
-	   
-	    <c:if test="${not empty details.transactionId}">
-	       <div class="divTransactionId">
-	          <label>Transaction Id:</label> <span class="spTransactionId">${details.transactionId}</span>
-	       </div>
-	    </c:if>
-	    
+     
+	 </form>   
 	   
 	 	<div class="divBillTo">
 	 	<fieldset>	
