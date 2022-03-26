@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 /**
  * Shows details for an order, by ID.
+ * Coding fields=payment_source returns an empty response
  */
 public class OrdersGetRequest extends HttpRequest<Order> {
 
