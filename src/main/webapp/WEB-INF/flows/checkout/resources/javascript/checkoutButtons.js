@@ -48,7 +48,7 @@ $(document).ready(function(){
 	
 	 try {
 	      paypal.Buttons({    	 
-	    	fundingSource: paypal.FUNDING.CARD,
+	    	fundingSource: paypal.FUNDING.CARD,	    	
 	        createOrder: function() {
 	          return fetch(contextPath() + '/spring/paypal/order/create', {
 	        	  
@@ -77,17 +77,25 @@ $(document).ready(function(){
 	        	
 	        	console.log("onApprove#actions: " + JSON.stringify(actions));
 	        	
+	        	if(!data.orderID)
+	        		throw ("onApprove: Data does not contain an orderID");
+	        	
 	        	$("input[name='paymentId']").val(data.orderID);
 	        	
 	        	console.log("paymentId assigned: " + $("input[name='paymentId']").val());
 	        	
-	        	$("#myModal").modal("show");
-	         
-	        	
-	        }
+	        	$("#myModal").modal("show");	        	
+	        },
+            onError: function(err) {
+	    		
+	    		$(".alert").slideDown(500);
+	    		
+	    		$("#alertContent").html("An error occurred. " + err);
+	    		
+	    	}
 	      }).render('#paypal-button-container'); // Display payment options on your web page
 	    } catch(e) {
-	    	  alert("Error caught");}
+	    	  alert("Error caught: " + e);}
 	    
 	    
 	
